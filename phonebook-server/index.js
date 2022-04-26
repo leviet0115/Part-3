@@ -25,6 +25,8 @@ var persons = [
   },
 ];
 
+app.use(express.json());
+
 app.get("/api/persons", (req, res) => {
   res.json(persons);
 });
@@ -50,6 +52,14 @@ app.delete("/api/persons/:id", (req, res) => {
   const id = req.params.id;
   persons = persons.filter((person) => person.id !== Number(id));
   res.status(204).end();
+  console.log(persons);
+});
+
+app.post("/api/persons", (req, res) => {
+  const person = req.body;
+  const newId = persons[persons.length - 1].id + 1;
+  persons = [...persons, { ...person, id: newId }];
+  console.log(persons);
 });
 
 const PORT = 3001;
