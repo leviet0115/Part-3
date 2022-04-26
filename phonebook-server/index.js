@@ -2,7 +2,7 @@ const express = require("express");
 
 const app = express();
 
-var persons = [
+const persons = [
   {
     id: 1,
     name: "Arto Hellas",
@@ -56,9 +56,29 @@ app.delete("/api/persons/:id", (req, res) => {
 });
 
 app.post("/api/persons", (req, res) => {
-  const person = req.body;
-  const newId = persons[persons.length - 1].id + 1;
-  persons = [...persons, { ...person, id: newId }];
+  const data = req.body;
+  const createId = () => persons[persons.length - 1].id + 1;
+
+  if (!data.name) {
+    return res.status(400).json({ error: "Name is missing." });
+  }
+
+  if (!data.number) {
+    return res.status(400).json({ error: "Number is misisng." });
+  }
+
+  if (persons.find((person) => person.name === data.name)) {
+    return res.status(400).json({ error: "Name must be unique!" });
+  }
+
+  const person = {
+    id: createId(),
+    name: data.name,
+    number: data.number,
+  };
+
+  persons.push(person);
+
   console.log(persons);
 });
 
