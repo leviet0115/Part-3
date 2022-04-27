@@ -54,4 +54,3 @@ if (input.length == 5) {
     })
     .then(() => process.exit(1));
 }
-//PpE0ECkrNj2dCNdS
