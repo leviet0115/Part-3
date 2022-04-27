@@ -75,7 +75,6 @@ app.post("/api/persons", (req, res) => {
         name: data.name,
         number: data.number,
       });
-
       newPerson.save().then((savedPerson) => res.json(savedPerson));
     }
   });
