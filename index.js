@@ -16,10 +16,7 @@ app.use(cors());
 app.use(express.json());
 
 morgan.token("data", (req) => {
-  if (req.method === "POST") {
-    return JSON.stringify(req.body);
-  }
-
+  if (req.method === "POST") return JSON.stringify(req.body);
   return " ";
 });
 
@@ -47,7 +44,6 @@ app.get("/api/persons/:id", (req, res, next) => {
   Person.findById(req.params.id)
     .then((result) => {
       if (result) return res.json(result);
-
       return res.status(404).end();
     })
     .catch((err) => next(err));
@@ -96,7 +92,6 @@ app.put("/api/persons/:id", (req, res, next) => {
   Person.findByIdAndUpdate(req.params.id, person, { new: true })
     .then((result) => {
       if (result) return res.json(result);
-
       return res.status(404).end();
     })
     .catch((err) => next(err));
