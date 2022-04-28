@@ -4,7 +4,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 const Person = require("./models/person");
 const person = require("./models/person");
-const { response } = require("express");
+const errorHandler = require("./errorHandler");
 
 const app = express();
 
@@ -29,55 +29,80 @@ app.use(
 
 //api routes
 app.get("/api/persons", (req, res) => {
-  Person.find({}).then((results) => {
-    res.json(results);
-  });
+  Person.find({})
+    .then((results) => res.json(results))
+    .catch((err) => next(err));
 });
 
-app.get("/info", (req, res) => {
+app.get("/info", (req, res, next) => {
   const reqTime = new Date(Date.now()).toString();
-  const resMsg =
-    `Phonebook has info for ${persons.length} persons.` + "<br/>" + reqTime;
-  res.send(resMsg);
+  Person.countDocuments({})
+    .then((result) =>
+      res.send(`Phonebook has info for ${result} persons.` + "<br/>" + reqTime)
+    )
+    .catch((err) => next(err));
 });
 
-app.get("/api/persons/:id", (req, res) => {
+app.get("/api/persons/:id", (req, res, next) => {
   Person.findById(req.params.id)
-    .then((result) => res.json(result))
-    .catch((err) => {
-      console.log(err);
-      res.status(404).end();
-    });
+    .then((result) => {
+      if (result) return res.json(result);
+
+      return res.status(404).end();
+    })
+    .catch((err) => next(err));
 });
 
-app.delete("/api/persons/:id", (req, res) => {
+app.delete("/api/persons/:id", (req, res, next) => {
   Person.findByIdAndRemove(req.params.id)
     .then((result) => res.status(204).end())
-    .catch((err) => console.log(err));
+    .catch((err) => next(err));
 });
 
-app.post("/api/persons", (req, res) => {
+app.post("/api/persons", (req, res, next) => {
   const data = req.body;
 
   if (!data.name) {
-    return res.status(400).json({ error: "Name is missing." });
+    return res.status(400).send({ error: "Name is missing." });
   }
 
   if (!data.number) {
-    return res.status(400).json({ error: "Number is misisng." });
+    return res.status(400).send({ error: "Number is misisng." });
   }
   Person.find({ name: data.name }).then((result) => {
     if (result.length > 0) {
-      return res.status(400).json({ error: "Name must be uniques" });
+      return res.status(400).send({ error: "Name must be uniques" });
     } else {
       const newPerson = new Person({
         name: data.name,
         number: data.number,
       });
-      newPerson.save().then((savedPerson) => res.json(savedPerson));
+      newPerson
+        .save()
+        .then((savedPerson) => res.json(savedPerson))
+        .catch((err) => next(err));
     }
   });
 });
+
+app.put("/api/persons/:id", (req, res, next) => {
+  const data = req.body;
+
+  const person = {
+    name: data.name,
+    number: data.number,
+  };
+
+  Person.findByIdAndUpdate(req.params.id, person, { new: true })
+    .then((result) => {
+      if (result) return res.json(result);
+
+      return res.status(404).end();
+    })
+    .catch((err) => next(err));
+});
+
+app.use(errorHandler);
 
 //Porting
 const PORT = process.env.PORT;
