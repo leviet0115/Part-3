@@ -9,8 +9,19 @@ mongoose
 
 const personSchema = new mongoose.Schema(
   {
-    name: String,
-    number: String,
+    name: {
+      type: String,
+      minlength: [3, "The name must have at least 3 characters."],
+    },
+    number: {
+      type: String,
+      minLength: [8, "The number must have at least 8 characters"],
+      validate: {
+        validator: (number) => /^\d{2,3}\-\d+$/.test(number),
+        message:
+          "The phone number must be separated into to two parts with a dash (-) and the first part should has 2-3 numbers.",
+      },
+    },
   },
   { collection: "phonebook" }
 );

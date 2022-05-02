@@ -4,7 +4,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 const Person = require("./models/person");
 const person = require("./models/person");
-const errorHandler = require("./errorHandler");
+const errorHandler = require("./errorHandlers/errorHandler");
 
 const app = express();
 
@@ -89,7 +89,11 @@ app.put("/api/persons/:id", (req, res, next) => {
     number: data.number,
   };
 
-  Person.findByIdAndUpdate(req.params.id, person, { new: true })
+  Person.findByIdAndUpdate(req.params.id, person, {
+    new: true,
+    runValidators: true,
+    context: "query",
+  })
     .then((result) => {
       if (result) return res.json(result);
       return res.status(404).end();
