@@ -37,7 +37,7 @@ if (input.length === 3) {
     .then(() => process.exit(1));
 }
 
-if (input.length == 5) {
+if (input.length === 5) {
   const newName = input[3];
   const newNumber = input[4];
 

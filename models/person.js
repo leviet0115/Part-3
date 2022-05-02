@@ -19,9 +19,9 @@ const personSchema = new mongoose.Schema(
       minLength: [8, "The number must have at least 8 characters"],
       required: [true, "Number is missing."],
       validate: {
-        validator: (number) => /^\d{2,3}\-\d+$/.test(number),
+        validator: (number) => /^\d{2,3}-\d+$/.test(number),
         message:
-          "The phone number must be separated into to two parts with a dash (-) and the first part should has 2-3 numbers.",
+          "The phone number must be a string of digit and separated into to two parts with a dash (-) and the first part should has 2-3 numbers.",
       },
     },
   },

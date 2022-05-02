@@ -3,7 +3,6 @@ const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
 const Person = require("./models/person");
-const person = require("./models/person");
 const errorHandler = require("./errorHandlers/errorHandler");
 
 const app = express();
@@ -25,7 +24,7 @@ app.use(
 );
 
 //api routes
-app.get("/api/persons", (req, res) => {
+app.get("/api/persons", (req, res, next) => {
   Person.find({})
     .then((results) => res.json(results))
     .catch((err) => next(err));
@@ -51,7 +50,9 @@ app.get("/api/persons/:id", (req, res, next) => {
 
 app.delete("/api/persons/:id", (req, res, next) => {
   Person.findByIdAndRemove(req.params.id)
-    .then((result) => res.status(204).end())
+    .then((result) => {
+      if (result) return res.status(204).end();
+    })
     .catch((err) => next(err));
 });
 
