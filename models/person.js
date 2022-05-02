@@ -12,10 +12,12 @@ const personSchema = new mongoose.Schema(
     name: {
       type: String,
       minlength: [3, "The name must have at least 3 characters."],
+      required: [true, "Name is missing."],
     },
     number: {
       type: String,
       minLength: [8, "The number must have at least 8 characters"],
+      required: [true, "Number is missing."],
       validate: {
         validator: (number) => /^\d{2,3}\-\d+$/.test(number),
         message:
